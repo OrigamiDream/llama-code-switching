@@ -14,6 +14,7 @@ from llama.modeling_llama_force_flash_attn2 import LlamaForCausalLM
 BASE_MODEL_ID = 'beomi/llama-2-ko-7b'
 LORA_RANK = 8
 LORA_ALPHA = 16
+NUM_TRAIN_EPOCHS = 8
 LORA_TARGET_MODULES = ['q_proj', 'k_proj', 'v_proj']
 TRAIN_ON_INPUTS = True
 HF_HUB_REPO = os.environ['HF_HUB_REPO']
@@ -42,7 +43,7 @@ def main():
         save_strategy='steps',
         save_steps=100,
         warmup_ratio=0.1,
-        num_train_epochs=8,
+        num_train_epochs=NUM_TRAIN_EPOCHS,
         learning_rate=1e-5,
         lr_scheduler_type='linear',
         bf16=True,
@@ -61,7 +62,7 @@ def main():
     base_model = LlamaForCausalLM.from_pretrained(
         BASE_MODEL_ID,
         torch_dtype=torch.bfloat16,
-        device_map='auto',
+        device_map=device_map,
         quantization_config=BitsAndBytesConfig(
             load_in_4bit=True,
             bnb_4bit_use_double_quant=True,
